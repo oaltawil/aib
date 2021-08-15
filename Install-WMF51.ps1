@@ -18,7 +18,7 @@ function Write-TerminatingError {
         $Message
     )
 
-    Write-Host $Message
+    Write-Output $Message
 
     Exit
 
@@ -73,7 +73,7 @@ $WMFDownloadUri = "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-4
 # Generate the full download  path for Win7AndW2K8R2-KB3191566-x64.zip
 $WMFZipFilePath = Join-Path -Path $ScriptWorkingDirectory -ChildPath "Win7AndW2K8R2-KB3191566-x64.zip"
 
-Write-Host "`nDownloading `"$WMFDownloadUri`" to `"$WMFZipFilePath`"  ...`n"
+Write-Output "`nDownloading `"$WMFDownloadUri`" to `"$WMFZipFilePath`"  ...`n"
 
 # Instantiate a WebClient .Net object to use for downloading azcopy.zip
 $WebRequest = New-Object -Typename System.Net.WebClient
@@ -104,7 +104,7 @@ catch {
 # Generate the full path for the extracted FSLogixApps folder
 $WMFFolderPath = Join-Path -Path $ScriptWorkingDirectory -ChildPath "Win7AndW2K8R2-KB3191566-x64"
 
-Write-Host "`nExtracting Win7AndW2K8R2-KB3191566-x64.zip to `"$WMFFolderPath`" ...`n"
+Write-Output "`nExtracting Win7AndW2K8R2-KB3191566-x64.zip to `"$WMFFolderPath`" ...`n"
 
 if (-not (Test-Path -Path $WMFFolderPath)) {
 
@@ -147,14 +147,14 @@ $WusaArguments = @(
     "/norestart"
 )
 
-Write-Host "`nInstalling Windows Management Framework 5.1 using the Windows Update Standalone Installer: Wusa.exe `"$($MSUFilePath.FullName)`" /quiet /norestart ...`n"
+Write-Output "`nInstalling Windows Management Framework 5.1 using the Windows Update Standalone Installer: Wusa.exe `"$($MSUFilePath.FullName)`" /quiet /norestart ...`n"
 
 # Install the WVD Agent using msiexec.exe and wait for the installer to finish
 $WusaExitCode = Start-Process -FilePath wusa.exe -ArgumentList $WusaArguments -PassThru -NoNewWindow -Wait
 
 if ($WusaSuccessExitCodes -contains $WusaExitCode.ExitCode) {
 
-    Write-Host "`nSuccessfully installed WMF 5.1.`n"
+    Write-Output "`nSuccessfully installed WMF 5.1.`n"
 
 }
 else {
