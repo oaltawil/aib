@@ -142,7 +142,7 @@ $MSUFilePath = Join-Path -Path $WMFFolderPath -ChildPath "Win7AndW2K8R2-KB319156
 
 if (-not (Test-Path -Path $MSUFilePath)) {
 
-    Write-TerminatingError "Failed to find the Windows Update file: $MSUFilePath"
+    Write-TerminatingError "`nFailed to find the Windows Update file: $MSUFilePath.`n"
 
 }
 
@@ -153,7 +153,7 @@ $WusaArguments = @(
     "/norestart"
 )
 
-Write-Output "`nInstalling Windows Management Framework 5.1 using the Windows Update Standalone Installer: Wusa.exe `"$($MSUFilePath.FullName)`" /quiet /norestart ...`n"
+Write-Output "`nInstalling Windows Management Framework 5.1 using the Windows Update Standalone Installer: Wusa.exe `"$MSUFilePath`" /quiet /norestart ...`n"
 
 # Install the WVD Agent using msiexec.exe and wait for the installer to finish
 $WusaExitCode = Start-Process -FilePath wusa.exe -ArgumentList $WusaArguments -PassThru -NoNewWindow -Wait
