@@ -133,6 +133,10 @@ catch {
 }
 
 
+Write-Host "`nWaiting 30 seconds for the archive expansion to complete.`n"
+
+Start-Sleep -Seconds 30
+
 #
 # Install Win7AndW2K8R2-KB3191566-x64.msu
 #
