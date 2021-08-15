@@ -106,36 +106,25 @@ $WMFFolderPath = Join-Path -Path $ScriptWorkingDirectory -ChildPath "Win7AndW2K8
 
 Write-Output "`nExtracting Win7AndW2K8R2-KB3191566-x64.zip to `"$WMFFolderPath`" ...`n"
 
-if (-not (Test-Path -Path $WMFFolderPath)) {
+if (Test-Path -Path $WMFFolderPath) {
 
-    New-Item -Path $WMFFolderPath -ItemType Directory -Force | Out-Null
+    Remove-Item -Path $WMFFolderPath -Recurse -Force
+
 }
 
 try {
-    # Create a Shell (Windows Explorer) COM Object
-    $ShellObject = New-Object -ComObject Shell.Application
 
-    # Retrieve the contents of the azcopy.zip archive
-    $WMFZipFileContents = $ShellObject.NameSpace($WMFZipFilePath).Items()
-    
-    # Create a Shell Folder Object for the FSLogixApps directory
-    $WMFFolderObject = $ShellObject.NameSpace($WMFFolderPath)
-    
-    # Use the Folder.CopyHere() method to extract the contents of the azcopy.zip archive to the "tools" folder overwriting any existing files
-    # Reference: https://docs.microsoft.com/en-us/windows/win32/shell/folder-copyhere
-    $WMFFolderObject.CopyHere($WMFZipFileContents, 16)
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($WMFZipFilePath, $WMFFolderPath)
 
 }
 catch {
 
-    Write-TerminatingError "`nAn unhandled exception occurred while extracting `"$WMFZipFilePath`" to `"$WMFFolderPath`".`n`n"
+    Write-TerminatingError "`An unhandled exception occurred while extracting `"$WMFZipFilePath`" to `"$WMFFolderPath`": $($Error[0].Exception).`n`n"
     
 }
 
-
-Write-Host "`nWaiting 1 minute for the archive expansion to complete ...`n"
-
-Start-Sleep -Seconds 60
 
 #
 # Install Win7AndW2K8R2-KB3191566-x64.msu
