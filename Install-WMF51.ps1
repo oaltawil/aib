@@ -92,7 +92,7 @@ catch [System.Net.WebException] {
 }
 catch {
     
-    Write-TerminatingError "`nAn unhandled exception occurred while downloading WMF 5.1 from `"$WMFDownloadUri`" to `"$WMFZipFilePath`".`n`n"
+    Write-TerminatingError "`nAn unhandled exception occurred while downloading WMF 5.1 from `"$WMFDownloadUri`" to `"$WMFZipFilePath`" : $($Error[0].Exception).`n`n"
     
 }
 
@@ -106,22 +106,30 @@ $WMFFolderPath = Join-Path -Path $ScriptWorkingDirectory -ChildPath "Win7AndW2K8
 
 Write-Output "`nExtracting Win7AndW2K8R2-KB3191566-x64.zip to `"$WMFFolderPath`" ...`n"
 
-if (Test-Path -Path $WMFFolderPath) {
+if (-not (Test-Path -Path $WMFFolderPath)) {
 
-    Remove-Item -Path $WMFFolderPath -Recurse -Force
+    New-Item -Path $WMFFolderPath -ItemType Directory -Force
 
 }
 
 try {
 
-    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $ShellObject = New-Object -ComObject Shell.Application
 
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($WMFZipFilePath, $WMFFolderPath)
+    # Retrieve the contents of the Win7AndW2K8R2-KB3191566-x64.zip archive
+    $WMFZipFileContents = $ShellObject.NameSpace($WMFZipFilePath).Items()
+    
+    # Create a Shell Folder Object for the Win7AndW2K8R2-KB3191566-x64 directory
+    $WMFFolderObject = $ShellObject.NameSpace($WMFFolderPath)
+    
+    # Use the Folder.CopyHere() method to extract the contents of the Win7AndW2K8R2-KB3191566-x64.zip archive to the Win7AndW2K8R2-KB3191566-x64 folder overwriting any existing files
+    # Reference: https://docs.microsoft.com/en-us/windows/win32/shell/folder-copyhere
+    $WMFFolderObject.CopyHere($WMFZipFileContents, 4)
 
 }
 catch {
 
-    Write-TerminatingError "`An unhandled exception occurred while extracting `"$WMFZipFilePath`" to `"$WMFFolderPath`": $($Error[0].Exception).`n`n"
+    Write-TerminatingError "`nAn unhandled exception occurred while extracting `"$WMFZipFilePath`" to `"$WMFFolderPath`" : $($Error[0].Exception).`n`n"
     
 }
 
