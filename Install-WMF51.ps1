@@ -140,9 +140,15 @@ catch {
 # Return the full path of the Win7AndW2K8R2-KB3191566-x64.msu file
 $MSUFilePath = Join-Path -Path $WMFFolderPath -ChildPath "Win7AndW2K8R2-KB3191566-x64.msu"
 
+if (-not (Test-Path -Path $MSUFilePath)) {
+
+    Write-TerminatingError "Failed to find the Windows Update file: $MSUFilePath"
+
+}
+
 # Define the command-line parameters for Win7AndW2K8R2-KB3191566-x64.msu
 $WusaArguments = @(
-    "`"$MSUFilePath`"",
+    $MSUFilePath,
     "/quiet",
     "/norestart"
 )
