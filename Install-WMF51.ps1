@@ -39,27 +39,13 @@ $WusaSuccessExitCodes = @(
 
 if (-not $ScriptWorkingDirectory) {
 
-    # Retrieve the script's parent folder
-    $ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+    $ScriptWorkingDirectory = $ENV:TEMP
 
-    # If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
-    if (-not $ScriptWorkingDirectory) {
-
-        $ScriptWorkingDirectory = $ENV:TEMP
-
-    }
 }
 elseif (-not (Test-Path -Path $ScriptWorkingDirectory)) {
 
-    # Retrieve the script's parent folder
-    $ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+    $ScriptWorkingDirectory = $ENV:TEMP
 
-    # If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
-    if (-not $ScriptWorkingDirectory) {
-
-        $ScriptWorkingDirectory = $ENV:TEMP
-
-    }
 }
 
 #
@@ -151,29 +137,12 @@ catch {
 # Install Win7AndW2K8R2-KB3191566-x64.msu
 #
 
-$WMFScriptFilePath = Get-ChildItem -Path $WMFFolderPath -Filter "Install-WMF5.1.ps1" -Recurse
-
-# Return an error if the Win7AndW2K8R2-KB3191566-x64.msu file could not be found
-if (-not (Test-Path -Path $WMFScriptFilePath.FullName)) {
-
-    Write-TerminatingError "`nFailed to find the file Install-WMF5.1.ps1 in the following directory: `"$WMFFolderPath`".`n`n"
-
-}
-
-
 # Return the full path of the Win7AndW2K8R2-KB3191566-x64.msu file
-$MSUFilePath = Get-ChildItem -Path $WMFFolderPath -Filter "Win7AndW2K8R2-KB3191566-x64.msu" -Recurse
-
-# Return an error if the Win7AndW2K8R2-KB3191566-x64.msu file could not be found
-if (-not (Test-Path -Path $MSUFilePath.FullName)) {
-
-    Write-TerminatingError "`nFailed to find the file Win7AndW2K8R2-KB3191566-x64.msu in the following directory: `"$WMFFolderPath`".`n`n"
-
-}
+$MSUFilePath = Join-Path -Path $WMFFolderPath -ChildPath "Win7AndW2K8R2-KB3191566-x64.msu"
 
 # Define the command-line parameters for Win7AndW2K8R2-KB3191566-x64.msu
 $WusaArguments = @(
-    "`"$($MSUFilePath.FullName)`"",
+    "`"$MSUFilePath`"",
     "/quiet",
     "/norestart"
 )
