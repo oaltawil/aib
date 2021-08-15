@@ -124,7 +124,7 @@ try {
     
     # Use the Folder.CopyHere() method to extract the contents of the Win7AndW2K8R2-KB3191566-x64.zip archive to the Win7AndW2K8R2-KB3191566-x64 folder overwriting any existing files
     # Reference: https://docs.microsoft.com/en-us/windows/win32/shell/folder-copyhere
-    $WMFFolderObject.CopyHere($WMFZipFileContents, 4)
+    $WMFFolderObject.CopyHere($WMFZipFileContents, 20)
 
 }
 catch {
