@@ -32,7 +32,7 @@ $WusaSuccessExitCodes = @(
 
 )
 
-if (-not (Test-Path -Path $ScriptWorkingDirectory)) {
+if (-not $ScriptWorkingDirectory) {
 
     # Retrieve the script's parent folder
     $ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
@@ -43,7 +43,18 @@ if (-not (Test-Path -Path $ScriptWorkingDirectory)) {
         $ScriptWorkingDirectory = $ENV:TEMP
 
     }
+}
+elseif (-not (Test-Path -Path $ScriptWorkingDirectory)) {
 
+    # Retrieve the script's parent folder
+    $ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+
+    # If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
+    if (-not $ScriptWorkingDirectory) {
+
+        $ScriptWorkingDirectory = $ENV:TEMP
+
+    }
 }
 
 #
