@@ -1,3 +1,8 @@
+<#
+This script installs KB3191566: Windows Management Framework 5.1 for Windows 7 SP1 x64
+This script is fully compatible with PowerShell 2.0 on Windows 7 SP1
+#>
+
 param (
     [String]
     $ScriptWorkingDirectory
