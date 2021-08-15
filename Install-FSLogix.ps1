@@ -1,9 +1,7 @@
-<#
-C:\Windows\SysWOW64\ext-ms-win-kernel32-package-current-l1-1-0.DLL
-C:\Windows\SysWOW64\api-ms-win-appmodel-runtime-l1-1-1.DLL
-
-#>
-
+param (
+    [String]
+    $ScriptWorkingDirectory
+)
 
 #
 # A helper function that outputs an error message and stops script execution.
@@ -12,7 +10,6 @@ C:\Windows\SysWOW64\api-ms-win-appmodel-runtime-l1-1-1.DLL
 function Write-TerminatingError {
 
     param (
-        [Parameter(Mandatory)]
         [String]
         $Message
     )
@@ -39,14 +36,18 @@ $MsiExecSuccessExitCodes = @(
     1618    # Fast Retry 
     
 )
+# If the script working directory parameter was not specified
+if (-not (Test-Path -Path $ScriptWorkingDirectory)) {
 
-# Retrieve the script's parent folder
-$ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent -ErrorAction SilentlyContinue
+    # Retrieve the script's parent folder
+    $ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent -ErrorAction SilentlyContinue
 
-# If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
-if (-not $ScriptWorkingDirectory) {
+    # If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
+    if (-not $ScriptWorkingDirectory) {
 
-    $ScriptWorkingDirectory = $ENV:TEMP
+        $ScriptWorkingDirectory = $ENV:TEMP
+
+    }
 
 }
 

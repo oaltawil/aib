@@ -1,4 +1,7 @@
-
+param (
+    [String]
+    $ScriptWorkingDirectory
+)
 #
 # A helper function that outputs an error message and stops script execution.
 #
@@ -11,8 +14,6 @@ function Write-TerminatingError {
     )
 
     Write-Host $Message
-
-    Stop-Transcript
 
     Exit
 
@@ -31,16 +32,19 @@ $WusaSuccessExitCodes = @(
 
 )
 
-# Retrieve the script's parent folder
-$ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+if (-not (Test-Path -Path $ScriptWorkingDirectory)) {
 
-# If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
-if (-not $ScriptWorkingDirectory) {
+    # Retrieve the script's parent folder
+    $ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
 
-    $ScriptWorkingDirectory = $ENV:TEMP
+    # If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
+    if (-not $ScriptWorkingDirectory) {
+
+        $ScriptWorkingDirectory = $ENV:TEMP
+
+    }
 
 }
-
 
 #
 # Verify Administrative Privileges
