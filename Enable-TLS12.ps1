@@ -2,6 +2,8 @@
 # Configure WinHttp for TLS 1.2
 #
 
+Write-Output "`nConfiguring WinHttp for TLS 1.2.`n"
+
 $WinHttpRegistryKeyPaths = @(
         "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp", 
         "HKLM:SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp"
@@ -19,6 +21,8 @@ foreach ($WinHttpRegistryKeyPath in $WinHttpRegistryKeyPaths) {
 # Enable TLS 1.2
 #
 
+Write-Output "`nEnabling TLS 1.2.`n"
+
 $Roles = @("Client", "Server")
 foreach ($Role in $Roles) {
 
@@ -33,6 +37,9 @@ foreach ($Role in $Roles) {
 #
 # Disable SSH 2.0, SSH 3.0, TLS 1.0, and TLS 1.1
 #
+
+
+Write-Output "`nDisabling SSH 2.0, SSH 3.0, TLS 1.0, and TLS 1.1.`n"
 
 $Protocols = @("SSL 2.0", "SSL 3.0", "TLS 1.0", "TLS 1.1")
 $Roles = @("Client", "Server")
@@ -54,6 +61,7 @@ foreach ($Protocol in $Protocols) {
 # Configure .Net Framework
 #
 
+Write-Out "`nConfiguring .Net Framework 2.0 and .Net Framework 4.0 for TLS 1.2.`n"
 $NETFrameworkVersions = @("v2.0.50727", "v4.0.30319")
 $NETFrameworkRegistryValueNames = @("SystemDefaultTlsVersions", "SchUseStrongCrypto")
 
@@ -66,4 +74,3 @@ foreach ($NETFrameworkVersion in $NETFrameworkVersions) {
 
     }
 }
-

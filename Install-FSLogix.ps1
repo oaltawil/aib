@@ -169,7 +169,7 @@ Write-Host "`nInstalling FSLogix Apps using `"$FSLogixAppsSetupFilePath`" ...`n"
 # Install the WVD Agent using msiexec.exe and wait for the installer to finish
 $FSLogixAppsSetupExitCode = Start-Process -FilePath $FSLogixAppsSetupFilePath -ArgumentList $FSLogixAppsSetupArguments -PassThru -NoNewWindow -Wait
 
-if ($FSLogixAppsSetupExitCode.ExitCode -in $MsiExecSuccessExitCodes) {
+if ($MsiExecSuccessExitCodes -contains $FSLogixAppsSetupExitCode.ExitCode) {
 
     Write-Host "`nSuccessfully installed FSLogix Apps.`n"
 

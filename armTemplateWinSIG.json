@@ -94,6 +94,7 @@
                     "type": "PowerShell",
                     "name": "Install-KB2592687-RDP8.0",
                     "inline": [
+                        "Write-Output 'Installing KB2592687: Update for Remote Desktop Protocol 8.0 for Windows 7 SP1.'",
                         "wusa.exe C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu /quiet /norestart"
                     ],
                     "runAsSystem": false,
@@ -111,6 +112,7 @@
                     "type": "PowerShell",
                     "name": "Install-KB3191566-WMF5.1",
                     "inline": [
+                        "Write-Output 'Installing KB3191566: Windows Management Framework 5.1 for Windows 7 SP1.'",
                         "wusa.exe C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu /quiet /norestart"
                     ],
                     "runAsSystem": false,
@@ -121,7 +123,7 @@
                     "type": "PowerShell",
                     "name": "Enable-RDP8.0",
                     "inline": [
-                        "Get-Host",
+                        "Write-Output 'Enabling Remote Desktop Protocol 8.0.'",
                         "New-Item -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Force",
                         "Set-ItemProperty -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Name fServerEnableRDP8 -Type Dword -Value 1 -Force"
                     ],
@@ -142,6 +144,18 @@
                     "name": "Restart-Computer-1",
                     "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\BuildArtifacts\\azureImageBuilderRestart.txt",
                     "restartTimeout": "15m"
+                },
+
+                {
+                    "type": "PowerShell",
+                    "name": "Verify-InstalledComponents",
+                    "inline": [
+                        "Get-Host",
+                        "Get-WmiObject -Class Win32_QuickFixEngineering -Filter \"(HotFixID = 'KB2592687') OR (HotfixID = 'KB3191566')\"",
+                        "Get-WmiObject -Class Win32_Product -Filter \"Name = 'Microsoft FSLogix Apps' \""
+                    ],
+                    "runAsSystem": false,
+                    "runElevated": true
                 }
 
             ],
