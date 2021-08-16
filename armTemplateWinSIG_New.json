@@ -54,24 +54,13 @@
                 "customize": [
 
                     {
-                        "type": "WindowsUpdate",
-                        "name": "Install-RecommendedUpdates",
-                        "searchCriteria": "BrowseOnly=0 and IsInstalled=0",
-                        "filters": [
-                            "exclude:$false",
-                            "include:$true"
-                        ],
-                        "updateLimit": 20
-                    },
-
-                    {
                         "type": "PowerShell",
                         "name": "Create-BuildArtifacts",
                         "inline": [
                             "New-Item -Path C:\\BuildArtifacts\\SecurityUpdates -ItemType Directory -Force",
                             "New-Item -Path C:\\BuildArtifacts\\Applications -ItemType Directory -Force" 
                         ],
-                        "runAsSystem": false,
+                        "runAsSystem": true,
                         "runElevated": true
                     },
 
@@ -79,7 +68,7 @@
                         "type": "PowerShell",
                         "name": "Enable-TLS1.2",
                         "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
-                        "runAsSystem": false,
+                        "runAsSystem": true,
                         "runElevated": true
                     },
 
@@ -112,7 +101,7 @@
                             "New-Item -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Force",
                             "Set-ItemProperty -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Name fServerEnableRDP8 -Type Dword -Value 1 -Force"
                         ],
-                        "runAsSystem": false,
+                        "runAsSystem": true,
                         "runElevated": true
                     },
                     
@@ -206,7 +195,7 @@
                             "Get-WmiObject -Class Win32_Product -Filter \"Name = 'Microsoft FSLogix Apps'\"",
                             "Remove-Item -Path C:\\BuildArtifacts -Recurse -Force"
                         ],
-                        "runAsSystem": false,
+                        "runAsSystem": true,
                         "runElevated": true
                     }
 
