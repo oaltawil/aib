@@ -1,0 +1,183 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "imageTemplateName": {
+            "type": "string"
+        },
+        "api-version": {
+            "type": "string"
+        },
+        "svclocation": {
+            "type": "string"
+        }
+    },
+    
+    "variables": {
+    },
+
+
+    "resources": [
+      {
+        "name": "[parameters('imageTemplateName')]",
+        "type": "Microsoft.VirtualMachineImages/imageTemplates",
+        "apiVersion": "[parameters('api-version')]",
+        "location": "[parameters('svclocation')]",
+        "dependsOn": [],
+        "tags": {
+            "imagebuilderTemplate": "AzureImageBuilderSIG",
+            "userIdentity": "enabled"
+        },
+        "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": {
+                "/subscriptions/fb3b34ed-d5da-40c7-8b10-3628d5590ea3/resourcegroups/rg-aibwinsig/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aibIdentity1629042837": {}
+            }
+        },
+
+        "properties": {
+            "buildTimeoutInMinutes" : 120,
+
+            "vmProfile": 
+                    {
+                    "vmSize": "Standard_D2s_v4",
+                    "osDiskSizeGB": 127
+                    },
+        
+            "source": {
+                "type": "PlatformImage",
+                    "publisher": "MicrosoftWindowsDesktop",
+                    "offer": "windows-7",
+                    "sku": "win7-enterprise",
+                    "version": "latest"
+                
+            },
+            "customize": [
+
+                {
+                    "type": "PowerShell",
+                    "name": "Create-BuildArtifacts",
+                    "inline": [
+                        "New-Item -Path C:\\BuildArtifacts\\SecurityUpdates -ItemType Directory -Force" 
+                    ],
+                    "runAsSystem": false,
+                    "runElevated": true
+                },
+
+                {
+                    "type": "PowerShell",
+                    "name": "Enable-TLS1.2",
+                    "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
+                    "runAsSystem": false,
+                    "runElevated": true
+                },
+
+                {
+                    "type": "File",
+                    "name": "Download-KB2592687-RDP8.0",
+                    "sourceUri": "https://download.microsoft.com/download/A/F/5/AF5C565C-9771-4BFB-973B-4094C1F58646/Windows6.1-KB2592687-x64.msu",
+                    "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu"
+                },
+
+                {
+                    "type": "PowerShell",
+                    "name": "Install-KB2592687-RDP8.0",
+                    "inline": [
+                        "wusa.exe C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu /quiet /norestart"
+                    ],
+                    "runAsSystem": false,
+                    "runElevated": true
+                },
+
+                {
+                    "type": "File",
+                    "name": "Download-KB3191566-WMF5.1",
+                    "sourceUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Win7AndW2K8R2-KB3191566-x64.msu",
+                    "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu"
+                },
+
+                {
+                    "type": "PowerShell",
+                    "name": "Install-KB3191566-WMF5.1",
+                    "inline": [
+                        "wusa.exe C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu /quiet /norestart"
+                    ],
+                    "runAsSystem": false,
+                    "runElevated": true
+                },
+
+                {
+                    "type": "WindowsRestart",
+                    "name": "Restart-Computer-1",
+                    "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\BuildArtifacts\\azureImageBuilderRestart.txt",
+                    "restartTimeout": "15m"
+                },
+
+                {
+                    "type": "WindowsUpdate",
+                    "name": "Install-RecommendedUpdates",
+                    "searchCriteria": "BrowseOnly=0 and IsInstalled=0",
+                    "filters": [
+                        "exclude:$false",
+                        "include:$true"
+                    ],
+                    "updateLimit": 20
+                },
+
+                {
+                    "type": "PowerShell",
+                    "name": "Enable-RDP8.0",
+                    "inline": [
+                        "Get-Host",
+                        "New-Item -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Force",
+                        "Set-ItemProperty -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Name fServerEnableRDP8 -Type Dword -Value 1 -Force"
+                    ],
+                    "runAsSystem": false,
+                    "runElevated": true
+                },
+
+                {
+                    "type": "PowerShell",
+                    "name": "Install-FSLogixApps",
+                    "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Install-FSLogix.ps1",
+                    "runAsSystem": false,
+                    "runElevated": true
+                },
+
+                {
+                    "type": "WindowsRestart",
+                    "name": "Restart-Computer-1",
+                    "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\BuildArtifacts\\azureImageBuilderRestart.txt",
+                    "restartTimeout": "15m"
+                }
+
+            ],
+            "distribute": 
+            [
+                {   
+                    "type": "SharedImage",
+                    "galleryImageId": "/subscriptions/fb3b34ed-d5da-40c7-8b10-3628d5590ea3/resourceGroups/rg-aibwinsig/providers/Microsoft.Compute/galleries/scrapaper_SharedImageGallery/images/customWindows7Image",
+                    "runOutputName": "build-win7-enterprise",
+                    "artifactTags": {
+                        "source": "azureVmImageBuilder",
+                        "baseosimg": "win7-enterprise"
+                    },
+                    "replicationRegions": [
+                      "eastus",
+                      "eastus2"
+                    ]
+                }
+            ]
+            }
+        }
+
+    
+    ]
+}    
+
+
+
+
+
+
+
