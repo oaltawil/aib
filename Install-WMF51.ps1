@@ -133,6 +133,7 @@ catch {
     
 }
 
+Start-Sleep -Seconds 5
 
 #
 # Install Win7AndW2K8R2-KB3191566-x64.msu
