@@ -16,8 +16,6 @@ function Write-TerminatingError {
 
     Write-Host $Message
 
-    Stop-Transcript
-
     Exit
 
 }
@@ -37,32 +35,18 @@ $MsiExecSuccessExitCodes = @(
     
 )
 # If the script working directory parameter was not specified
-if (-not (Test-Path -Path $ScriptWorkingDirectory)) {
+if (-not $ScriptWorkingDirectory) {
 
-    # Retrieve the script's parent folder
-    $ScriptWorkingDirectory = Split-Path -Path $MyInvocation.MyCommand.Path -Parent -ErrorAction SilentlyContinue
+    $ScriptWorkingDirectory = $ENV:TEMP
 
-    # If the script's working directory could not be determined, use the currently logged on user's Temporary folder instead
-    if (-not $ScriptWorkingDirectory) {
-
-        $ScriptWorkingDirectory = $ENV:TEMP
-
-    }
+}
+# If the script working directory does not exist
+elseif (-not (Test-Path -Path $ScriptWorkingDirectory)) {
+        
+    $ScriptWorkingDirectory = $ENV:TEMP
 
 }
 
-# Generate the name of the Script log file: Install-FSLogix.log
-$LogFileName = ($MyInvocation.MyCommand.Name).Replace(".ps1", ".log")
-
-# If the script's file name could not be determined, use the static string "Install-FSLogix.log"
-if (-not $LogFileName) {
-
-    $LogFileName = "Install-FSLogix.log"
-    
-}
-
-# Start a transcript logging all script activity to the Script log file
-Start-Transcript -Path (Join-Path -Path $ScriptWorkingDirectory -ChildPath $LogFileName) -Append
 
 #
 # Verify Administrative Privileges
@@ -142,7 +126,7 @@ try {
     
     # Use the Folder.CopyHere() method to extract the contents of the azcopy.zip archive to the "tools" folder overwriting any existing files
     # Reference: https://docs.microsoft.com/en-us/windows/win32/shell/folder-copyhere
-    $FSLogixAppsFolderObject.CopyHere($FSLogixAppsZipContents, 16)
+    $FSLogixAppsFolderObject.CopyHere($FSLogixAppsZipContents, 20)
 
 }
 catch {
@@ -195,5 +179,3 @@ else {
     Write-TerminatingError "`nFailed to install FSLogix Apps with error code $($FSLogixAppsSetupExitCode.ExitCode).`n"
 
 }
-
-Stop-Transcript
