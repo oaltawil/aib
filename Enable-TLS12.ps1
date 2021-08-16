@@ -61,7 +61,7 @@ foreach ($Protocol in $Protocols) {
 # Configure .Net Framework
 #
 
-Write-Out "`nConfiguring .Net Framework 2.0 and .Net Framework 4.0 for TLS 1.2.`n"
+Write-Output "`nConfiguring .Net Framework 2.0 and .Net Framework 4.0 for TLS 1.2.`n"
 $NETFrameworkVersions = @("v2.0.50727", "v4.0.30319")
 $NETFrameworkRegistryValueNames = @("SystemDefaultTlsVersions", "SchUseStrongCrypto")
 

@@ -87,7 +87,7 @@
                         "type": "File",
                         "name": "Download-KB2592687-RDP8.0",
                         "sourceUri": "https://download.microsoft.com/download/A/F/5/AF5C565C-9771-4BFB-973B-4094C1F58646/Windows6.1-KB2592687-x64.msu",
-                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu"
+                        "destination": "C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu"
                     },
 
                     {
@@ -98,7 +98,8 @@
                             "wusa.exe C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu /quiet /norestart"
                         ],
                         "runAsSystem": false,
-                        "runElevated": true
+                        "runElevated": true,
+                        "valid_exit_codes": [0, 2359301, 2359302]
                     },
 
                     {
