@@ -60,16 +60,8 @@
                             "New-Item -Path C:\\BuildArtifacts\\SecurityUpdates -ItemType Directory -Force",
                             "New-Item -Path C:\\BuildArtifacts\\Applications -ItemType Directory -Force" 
                         ],
-                        "runAsSystem": true,
-                        "runElevated": true
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Enable-TLS1.2",
-                        "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
-                        "runAsSystem": true,
-                        "runElevated": true
+                        "runAsSystem": false,
+                        "runElevated": false
                     },
 
                     {
@@ -80,36 +72,17 @@
                     },
 
                     {
-                        "type": "PowerShell",
-                        "name": "Install-KB2592687-RDP8.0",
-                        "inline": [
-                            "Write-Output 'Installing KB2592687: Update for Remote Desktop Protocol 8.0 for Windows 7 SP1.'",
-                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu, /quiet, /norestart",
-                            "return $Process.ExitCode"
-                        ],
-                        "runAsSystem": true,
-                        "runElevated": true,
-                        "valid_exit_codes": [0, 2359301, 2359302]
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Enable-RDP8.0",
-                        "inline": [
-                            "Write-Output 'Enabling Remote Desktop Protocol 8.0.'",
-                            "New-Item -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Force",
-                            "Set-ItemProperty -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Name fServerEnableRDP8 -Type Dword -Value 1 -Force"
-                        ],
-                        "runAsSystem": true,
-                        "runElevated": true
-                    },
-                    
-                    {
                         "type": "File",
                         "name": "Download-KB3191566-WMF5.1",
                         "sourceUri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7AndW2K8R2-KB3191566-x64.zip",
                         "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.zip"
+                    },
+
+                    {
+                        "type": "File",
+                        "name": "Download-FSLogixApps",
+                        "sourceUri": "https://aka.ms/fslogix/download",
+                        "destination":"C:\\BuildArtifacts\\Applications\\FSLogixApps.zip"
                     },
 
                     {
@@ -122,12 +95,64 @@
                             "$ShellObject = New-Object -ComObject Shell.Application",
                             "$ZipFileContents = $ShellObject.NameSpace($ZipFilePath).Items()",
                             "$FolderObject = $ShellObject.NameSpace($DestinationFolderPath)",
-                            "$FolderObject.CopyHere($ZipFileContents, 20)"
+                            "$FolderObject.CopyHere($ZipFileContents, 20)",
+                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu"
                         ],
+                        "runAsSystem": false,
+                        "runElevated": false
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Expand-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Expanding FSLogixApps.zip.'",
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
+                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications'",
+                            "$ShellObject = New-Object -ComObject Shell.Application",
+                            "$ZipFileContents = $ShellObject.NameSpace($ZipFilePath).Items()",
+                            "$FolderObject = $ShellObject.NameSpace($DestinationFolderPath)",
+                            "$FolderObject.CopyHere($ZipFileContents, 20)",
+                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": false
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Enable-TLS1.2",
+                        "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
                         "runAsSystem": false,
                         "runElevated": true
                     },
 
+                    {
+                        "type": "PowerShell",
+                        "name": "Install-KB2592687-RDP8.0",
+                        "inline": [
+                            "Write-Output 'Installing KB2592687: Update for Remote Desktop Protocol 8.0 for Windows 7 SP1.'",
+                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu, /quiet, /norestart",
+                            "return $Process.ExitCode"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": true,
+                        "valid_exit_codes": [0, 2359301, 2359302]
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Enable-RDP8.0",
+                        "inline": [
+                            "Write-Output 'Enabling Remote Desktop Protocol 8.0.'",
+                            "New-Item -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Force",
+                            "Set-ItemProperty -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Name fServerEnableRDP8 -Type Dword -Value 1 -Force"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": true
+                    },
+                    
                     {
                         "type": "PowerShell",
                         "name": "Install-KB3191566-WMF5.1",
@@ -137,32 +162,9 @@
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": true,
+                        "runAsSystem": false,
                         "runElevated": true,
                         "valid_exit_codes": [0, 2359301, 2359302]
-                    },
-
-                    {
-                        "type": "File",
-                        "name": "Download-FSLogixApps",
-                        "sourceUri": "https://aka.ms/fslogix/download",
-                        "destination":"C:\\BuildArtifacts\\Applications\\FSLogixApps.zip"
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Expand-FSLogixApps",
-                        "inline": [
-                            "Write-Output 'Expanding Win7AndW2K8R2-KB3191566-x64.zip.'",
-                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
-                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications'",
-                            "$ShellObject = New-Object -ComObject Shell.Application",
-                            "$ZipFileContents = $ShellObject.NameSpace($ZipFilePath).Items()",
-                            "$FolderObject = $ShellObject.NameSpace($DestinationFolderPath)",
-                            "$FolderObject.CopyHere($ZipFileContents, 20)"
-                        ],
-                        "runAsSystem": false,
-                        "runElevated": true
                     },
 
                     {
@@ -174,7 +176,7 @@
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe -ArgumentList /install, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": true,
+                        "runAsSystem": false,
                         "runElevated": true
                     },
 
@@ -195,7 +197,7 @@
                             "Get-WmiObject -Class Win32_Product -Filter \"Name = 'Microsoft FSLogix Apps'\"",
                             "Remove-Item -Path C:\\BuildArtifacts -Recurse -Force"
                         ],
-                        "runAsSystem": true,
+                        "runAsSystem": false,
                         "runElevated": true
                     }
 
