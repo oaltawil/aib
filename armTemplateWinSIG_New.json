@@ -123,7 +123,8 @@
                             "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe"
                         ],
                         "runAsSystem": false,
-                        "runElevated": false
+                        "runElevated": false,
+                        "pause_before": "30s"
                     },
 
                     {
