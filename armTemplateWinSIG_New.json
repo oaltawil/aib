@@ -54,6 +54,17 @@
                 "customize": [
 
                     {
+                        "type": "WindowsUpdate",
+                        "name": "Install-RecommendedUpdates",
+                        "searchCriteria": "BrowseOnly=0 and IsInstalled=0",
+                        "filters": [
+                            "exclude:$false",
+                            "include:$true"
+                        ],
+                        "updateLimit": 20
+                    },
+
+                    {
                         "type": "PowerShell",
                         "name": "Create-BuildArtifacts",
                         "inline": [
