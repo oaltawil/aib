@@ -65,6 +65,17 @@
                 },
 
                 {
+                    "type": "WindowsUpdate",
+                    "name": "Install-RecommendedUpdates",
+                    "searchCriteria": "BrowseOnly=0 and IsInstalled=0",
+                    "filters": [
+                        "exclude:$false",
+                        "include:$true"
+                    ],
+                    "updateLimit": 20
+                },
+
+                {
                     "type": "PowerShell",
                     "name": "Enable-TLS1.2",
                     "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
@@ -104,24 +115,6 @@
                     ],
                     "runAsSystem": false,
                     "runElevated": true
-                },
-
-                {
-                    "type": "WindowsRestart",
-                    "name": "Restart-Computer-1",
-                    "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\BuildArtifacts\\azureImageBuilderRestart.txt",
-                    "restartTimeout": "15m"
-                },
-
-                {
-                    "type": "WindowsUpdate",
-                    "name": "Install-RecommendedUpdates",
-                    "searchCriteria": "BrowseOnly=0 and IsInstalled=0",
-                    "filters": [
-                        "exclude:$false",
-                        "include:$true"
-                    ],
-                    "updateLimit": 20
                 },
 
                 {
