@@ -87,7 +87,7 @@
                         "inline": [
                             "Write-Output 'Installing KB2592687: Update for Remote Desktop Protocol 8.0 for Windows 7 SP1.'",
                             "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu, /quiet, /norestart",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
@@ -139,7 +139,7 @@
                         "inline": [
                             "Write-Output 'Installing KB3191566: Windows Management Framework 5.1 for Windows 7 SP1.'",
                             "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu, /quiet, /norestart",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
