@@ -72,8 +72,7 @@
                             "New-Item -Path C:\\BuildArtifacts\\Applications -ItemType Directory -Force" 
                         ],
                         "runAsSystem": false,
-                        "runElevated": true,
-                        "debug_mode": 2
+                        "runElevated": true
                     },
 
                     {
@@ -81,8 +80,7 @@
                         "name": "Enable-TLS1.2",
                         "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
                         "runAsSystem": false,
-                        "runElevated": true,
-                        "debug_mode": 2
+                        "runElevated": true
                     },
 
                     {
@@ -101,10 +99,9 @@
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
+                        "runAsSystem": true,
                         "runElevated": true,
-                        "valid_exit_codes": [0, 2359301, 2359302],
-                        "debug_mode": 2
+                        "valid_exit_codes": [0, 2359301, 2359302]
                     },
 
                     {
@@ -116,8 +113,7 @@
                             "Set-ItemProperty -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Name fServerEnableRDP8 -Type Dword -Value 1 -Force"
                         ],
                         "runAsSystem": false,
-                        "runElevated": true,
-                        "debug_mode": 2
+                        "runElevated": true
                     },
                     
                     {
@@ -140,8 +136,7 @@
                             "$FolderObject.CopyHere($ZipFileContents, 20)"
                         ],
                         "runAsSystem": false,
-                        "runElevated": true,
-                        "debug_mode": 2
+                        "runElevated": true
                     },
 
                     {
@@ -153,10 +148,9 @@
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
+                        "runAsSystem": true,
                         "runElevated": true,
-                        "valid_exit_codes": [0, 2359301, 2359302],
-                        "debug_mode": 2
+                        "valid_exit_codes": [0, 2359301, 2359302]
                     },
 
                     {
@@ -179,8 +173,7 @@
                             "$FolderObject.CopyHere($ZipFileContents, 20)"
                         ],
                         "runAsSystem": false,
-                        "runElevated": true,
-                        "debug_mode": 2
+                        "runElevated": true
                     },
 
                     {
@@ -192,9 +185,8 @@
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe -ArgumentList /install, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
-                        "runElevated": true,
-                        "debug_mode": 2
+                        "runAsSystem": true,
+                        "runElevated": true
                     },
 
                     {
@@ -215,8 +207,7 @@
                             "Remove-Item -Path C:\\BuildArtifacts -Recurse -Force"
                         ],
                         "runAsSystem": false,
-                        "runElevated": true,
-                        "debug_mode": 2
+                        "runElevated": true
                     }
 
                 ],
