@@ -193,11 +193,12 @@
                         "inline": [
                             "Write-Output 'Installing Microsoft Edge Enterprise x64.'",
                             "Get-Item -Path C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList /i, C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi, /quiet,  /passive,  /qn,  /norestart",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList /i, C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi, /quiet, /passive, /qn, /norestart",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
-                        "runElevated": true
+                        "runElevated": true,
+                        "valid_exit_codes": [0, 1707, 3010, 1641, 1618]
                     },
 
                     {
@@ -215,6 +216,7 @@
                             "Get-Host",
                             "Get-WmiObject -Class Win32_QuickFixEngineering -Filter \"(HotFixID = 'KB2592687') OR (HotfixID = 'KB3191566')\"",
                             "Get-WmiObject -Class Win32_Product -Filter \"Name = 'Microsoft FSLogix Apps'\"",
+                            "Get-WmiObject -Class Win32_Product -Filter \"Name = 'Microsoft Edge'\"",
                             "Remove-Item -Path C:\\BuildArtifacts -Recurse -Force"
                         ],
                         "runAsSystem": false,
