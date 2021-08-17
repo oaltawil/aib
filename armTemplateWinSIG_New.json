@@ -166,7 +166,7 @@
                         "type": "PowerShell",
                         "name": "Download-MicrosoftEdge",
                         "inline": [
-                            "Write-Output 'Downloading Microsoft Edge x64.'",
+                            "Write-Output 'Downloading Microsoft Edge Enterprise x64.'",
                             "$DownloadUri = 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi'",
                             "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi'",
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
@@ -180,7 +180,7 @@
                         "type": "PowerShell",
                         "name": "Download-VSCode",
                         "inline": [
-                            "Write-Output 'Downloading Visual Studio Code.'",
+                            "Write-Output 'Downloading Visual Studio Code x64.'",
                             "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
                             "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe'",
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
@@ -236,7 +236,7 @@
                         "type": "PowerShell",
                         "name": "Install-VSCode",
                         "inline": [
-                            "Write-Output 'Installing Microsoft Visual Studio Code.'",
+                            "Write-Output 'Installing Microsoft Visual Studio Code x64.'",
                             "Get-Item -Path C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe",
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe -ArgumentList /verysilent, /norestart, /mergetasks=!runcode",
                             "return $Process.ExitCode"
