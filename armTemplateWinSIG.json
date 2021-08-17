@@ -90,6 +90,20 @@
                     },
 
                     {
+                        "type": "File",
+                        "name": "Download-MicrosoftEdge",
+                        "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
+                        "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi"
+                    },
+
+                    {
+                        "type": "File",
+                        "name": "Download-InternationalSettings",
+                        "sourceUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/InternationalSettings.xml",
+                        "destination":"C:\\BuildArtifacts\\Updates\\InternationalSettings.xml"
+                    },
+
+                    {
                         "type": "PowerShell",
                         "name": "Expand-KB3191566-WMF5.1",
                         "inline": [
@@ -103,7 +117,8 @@
                             "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu"
                         ],
                         "runAsSystem": false,
-                        "runElevated": false
+                        "runElevated": false,
+                        "pause_before": "15s"
                     },
 
                     {
@@ -160,20 +175,6 @@
                         "name": "Restart-Computer",
                         "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\BuildArtifacts\\azureImageBuilderRestart.txt",
                         "restartTimeout": "15m"
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Download-MicrosoftEdge",
-                        "inline": [
-                            "Write-Output 'Downloading Microsoft Edge Enterprise x64.'",
-                            "$DownloadUri = 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi'",
-                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi'",
-                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
-                            "Get-Item -Path $DestinationFilePath"
-                        ],
-                        "runAsSystem": false,
-                        "runElevated": false
                     },
 
                     {
@@ -267,13 +268,6 @@
                             "include:$_.Title -like 'French Language Pack*'"
                         ],
                         "updateLimit": 1
-                    },
-
-                    {
-                        "type": "File",
-                        "name": "Download-InternationalSettings",
-                        "sourceUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/InternationalSettings.xml",
-                        "destination":"C:\\BuildArtifacts\\Updates\\InternationalSettings.xml"
                     },
 
                     {
