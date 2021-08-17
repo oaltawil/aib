@@ -1,0 +1,39 @@
+<gs:GlobalizationServices xmlns:gs="urn:longhornGlobalizationUnattend">
+
+    <!-- User List -->
+    <gs:UserList>
+        <gs:User UserID="Current" CopySettingsToDefaultUserAcct="true" CopySettingsToSystemAcct="true"/>
+    </gs:UserList>
+
+    <!-- Display Language List -->
+    <gs:MUILanguagePreferences>
+        <gs:MUILanguage Value="fr-CA"/>
+        <gs:MUIFallback Value="en-US"/>
+    </gs:MUILanguagePreferences>
+
+    <!-- Input Methods  -->
+    <gs:InputPreferences>
+        <!-- Remove all input methods that use the Canadian Multilingual Keyboard 00011009 -->
+        <gs:InputLanguageID Action="remove" ID="0c0c:00011009"/>
+        <gs:InputLanguageID Action="remove" ID="1009:00011009"/>
+        
+        <!-- Add fr-CA:fr-CA and en-US:en-US -->
+        <gs:InputLanguageID Action="add" ID="0c0c:00001009"/>
+        <gs:InputLanguageID Action="add" ID="1009:00000409"/>
+    </gs:InputPreferences>
+
+    <!-- User Locale -->
+    <gs:UserLocale>
+        <gs:Locale Name="fr-CA" SetAsCurrent="true" ResetAllSettings="true">
+        </gs:Locale>
+    </gs:UserLocale>
+
+    <!-- Location (39: CA) -->
+    <gs:LocationPreferences> 
+        <gs:GeoID Value="39"/>
+    </gs:LocationPreferences>
+
+    <!-- System Locale -->
+    <gs:SystemLocale Name="fr-CA"/>
+
+</gs:GlobalizationServices>
