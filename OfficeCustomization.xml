@@ -1,6 +1,6 @@
 <Configuration ID="575e62f4-fcdf-46f1-a06a-3a0f0b20ace1">
   <Info Description="" />
-  <Add OfficeClientEdition="64" Channel="MonthlyEnterprise">
+  <Add OfficeClientEdition="64" Channel="SemiAnnual" Version="16.0.12527.22017">
     <Product ID="O365ProPlusRetail">
       <Language ID="fr-fr" />
       <Language ID="en-us" />
