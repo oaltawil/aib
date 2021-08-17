@@ -80,48 +80,6 @@
 
                     {
                         "type": "PowerShell",
-                        "name": "Download-FSLogixApps",
-                        "inline": [
-                            "Write-Output 'Downloading FSLogix Apps.'",
-                            "$DownloadUri = 'https://aka.ms/fslogix/download'",
-                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
-                            "$WebRequest = New-Object -Typename System.Net.WebClient",
-                            "$WebRequest.DownloadFile($DownloadUri, $DestinationFilePath)"
-                        ],
-                        "runAsSystem": false,
-                        "runElevated": false
-                    },
-
-                    {
-                        "type": "File",
-                        "name": "Download-MicrosoftEdge",
-                        "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
-                        "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi"
-                    },
-
-                    {
-                        "type": "File",
-                        "name": "Download-MicrosoftEdgeSetup",
-                        "sourceUri": "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?platform=Default&source=EdgeStablePage&Channel=Stable&language=en&consent=1",
-                        "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeSetup.exe"
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Download-VSCode",
-                        "inline": [
-                            "Write-Output 'Downloading Visual Studio Code.'",
-                            "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
-                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe'",
-                            "$WebRequest = New-Object -Typename System.Net.WebClient",
-                            "$WebRequest.DownloadFile($DownloadUri, $DestinationFilePath)"
-                        ],
-                        "runAsSystem": false,
-                        "runElevated": false
-                    },
-
-                    {
-                        "type": "PowerShell",
                         "name": "Expand-KB3191566-WMF5.1",
                         "inline": [
                             "Write-Output 'Expanding Win7AndW2K8R2-KB3191566-x64.zip.'",
@@ -135,32 +93,6 @@
                         ],
                         "runAsSystem": false,
                         "runElevated": false
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Expand-FSLogixApps",
-                        "inline": [
-                            "Write-Output 'Expanding FSLogixApps.zip.'",
-                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
-                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications'",
-                            "$ShellObject = New-Object -ComObject Shell.Application",
-                            "$ZipFileContents = $ShellObject.NameSpace($ZipFilePath).Items()",
-                            "$FolderObject = $ShellObject.NameSpace($DestinationFolderPath)",
-                            "$FolderObject.CopyHere($ZipFileContents, 20)",
-                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe"
-                        ],
-                        "runAsSystem": false,
-                        "runElevated": false,
-                        "pause_before": "30s"
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Enable-TLS1.2",
-                        "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
-                        "runAsSystem": false,
-                        "runElevated": true
                     },
 
                     {
@@ -205,15 +137,66 @@
 
                     {
                         "type": "PowerShell",
-                        "name": "Install-FSLogixApps",
-                        "inline": [
-                            "Write-Output 'Installing FSLogixApps.'",
-                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe -ArgumentList /install, /quiet, /norestart",
-                            "return $Process.ExitCode"
-                        ],
+                        "name": "Enable-TLS1.2",
+                        "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
                         "runAsSystem": false,
                         "runElevated": true
+                    },
+
+                    {
+                        "type": "WindowsRestart",
+                        "name": "Restart-Computer",
+                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\BuildArtifacts\\azureImageBuilderRestart.txt",
+                        "restartTimeout": "15m"
+                    },
+
+                    {
+                        "type": "File",
+                        "name": "Download-MicrosoftEdge",
+                        "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
+                        "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi"
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Download-VSCode",
+                        "inline": [
+                            "Write-Output 'Downloading Visual Studio Code.'",
+                            "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe'",
+                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
+                            "Get-Item -Path $DestinationFilePath"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": false
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Download-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Downloading FSLogix Apps.'",
+                            "$DownloadUri = 'https://aka.ms/fslogix/download'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
+                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
+                            "Get-Item -Path $DestinationFilePath"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": false
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Expand-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Expanding FSLogixApps.zip.'",
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
+                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications'",
+                            "Expand-Archive -Path $ZipFilePath -DestinationPath $DestinationFolderPath -Force",
+                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": false
                     },
 
                     {
@@ -237,6 +220,19 @@
                             "Write-Output 'Installing Microsoft Visual Studio Code.'",
                             "Get-Item -Path C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe",
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe -ArgumentList /VERYSILENT, /NORESTART",
+                            "return $Process.ExitCode"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": true
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Install-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Installing FSLogixApps.'",
+                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe -ArgumentList /install, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
