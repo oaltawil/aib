@@ -7,19 +7,15 @@
 
     <!-- Display Language List -->
     <gs:MUILanguagePreferences>
-        <gs:MUILanguage Value="fr-CA"/>
+        <gs:MUILanguage Value="fr-fr"/>
         <gs:MUIFallback Value="en-US"/>
     </gs:MUILanguagePreferences>
 
     <!-- Input Methods  -->
     <gs:InputPreferences>
-        <!-- Remove all input methods that use the Canadian Multilingual Keyboard 00011009 -->
-        <gs:InputLanguageID Action="remove" ID="0c0c:00011009"/>
-        <gs:InputLanguageID Action="remove" ID="1009:00011009"/>
-        
-        <!-- Add fr-CA:fr-CA and en-US:en-US -->
-        <gs:InputLanguageID Action="add" ID="0c0c:00001009"/>
-        <gs:InputLanguageID Action="add" ID="1009:00000409"/>
+        <!-- Remove en-us:en-us and fr-fr:fr-fr-->
+        <gs:InputLanguageID Action="remove" ID="0409:00000409"/>
+        <gs:InputLanguageID Action="remove" ID="040c:0000040c"/>
     </gs:InputPreferences>
 
     <!-- User Locale -->
