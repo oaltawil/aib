@@ -29,7 +29,7 @@ $runOutputName="aibCustomWindows7Image"
 $imageTemplateName="aibCustomWindows7ImageTemplateVer11"
 
 # The Image Template File Name
-$templateFilePath = "armTemplateWinSIG_New.json"
+$templateFilePath = "armTemplateWinSIG.json"
 
 # Image gallery name
 $sigGalleryName= "scrapaper_SharedImageGallery"
