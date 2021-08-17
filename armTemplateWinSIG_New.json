@@ -79,10 +79,17 @@
                     },
 
                     {
-                        "type": "File",
+                        "type": "PowerShell",
                         "name": "Download-FSLogixApps",
-                        "sourceUri": "https://aka.ms/fslogix/download",
-                        "destination":"C:\\BuildArtifacts\\Applications\\FSLogixApps.zip"
+                        "inline": [
+                            "Write-Output 'Downloading FSLogix Apps.'",
+                            "$DownloadUri = 'https://aka.ms/fslogix/download'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
+                            "$WebRequest = New-Object -Typename System.Net.WebClient",
+                            "$WebRequest.DownloadFile($DownloadUri, $DestinationFilePath)"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": false
                     },
 
                     {
@@ -90,6 +97,27 @@
                         "name": "Download-MicrosoftEdge",
                         "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
                         "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi"
+                    },
+
+                    {
+                        "type": "File",
+                        "name": "Download-MicrosoftEdgeSetup",
+                        "sourceUri": "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?platform=Default&source=EdgeStablePage&Channel=Stable&language=en&consent=1",
+                        "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeSetup.exe"
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Download-VSCode",
+                        "inline": [
+                            "Write-Output 'Downloading Visual Studio Code.'",
+                            "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe'",
+                            "$WebRequest = New-Object -Typename System.Net.WebClient",
+                            "$WebRequest.DownloadFile($DownloadUri, $DestinationFilePath)"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": false
                     },
 
                     {
@@ -203,21 +231,40 @@
                     },
 
                     {
-                        "type": "WindowsRestart",
-                        "name": "Restart-Computer-1",
-                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\BuildArtifacts\\azureImageBuilderRestart.txt",
-                        "restartTimeout": "15m"
+                        "type": "PowerShell",
+                        "name": "Install-VSCode",
+                        "inline": [
+                            "Write-Output 'Installing Microsoft Visual Studio Code.'",
+                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe -ArgumentList /VERYSILENT, /NORESTART",
+                            "return $Process.ExitCode"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": true
+                    },
+
+                    {
+                        "type": "WindowsUpdate",
+                        "name": "Install-FrenchLanguagePack",
+                        "searchCriteria": "AutoSelectOnWebSites=0 and IsInstalled=0",
+                        "filters": [
+                            "exclude:$false",
+                            "include:$_.Title -like 'French Language Pack*'"
+                        ],
+                        "updateLimit": 1
                     },
 
                     {
                         "type": "PowerShell",
                         "name": "Verify-InstalledComponents",
                         "inline": [
-                            "Write-Output 'Verifying Installed Components and Cleaning up Build Artificats'",
+                            "Write-Output 'Verifying Installed Components and Cleaning up Build Artifacts'",
                             "Get-Host",
-                            "Get-WmiObject -Class Win32_QuickFixEngineering -Filter \"(HotFixID = 'KB2592687') OR (HotfixID = 'KB3191566')\"",
+                            "Get-WmiObject -Class Win32_QuickFixEngineering -Filter \"(HotFixID = 'KB2592687') OR (HotfixID = 'KB3191566') OR (HotfixID = '2483139')\"",
                             "Get-WmiObject -Class Win32_Product -Filter \"Name = 'Microsoft FSLogix Apps'\"",
                             "Get-WmiObject -Class Win32_Product -Filter \"Name = 'Microsoft Edge'\"",
+                            "Get-Item -Path 'C:\\Program Files\\Microsoft VS Code\\Code.exe'",
+                            "dism.exe /online /Get-Intl",
                             "Remove-Item -Path C:\\BuildArtifacts -Recurse -Force"
                         ],
                         "runAsSystem": false,
