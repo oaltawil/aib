@@ -163,10 +163,17 @@
                     },
 
                     {
-                        "type": "File",
+                        "type": "PowerShell",
                         "name": "Download-MicrosoftEdge",
-                        "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
-                        "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi"
+                        "inline": [
+                            "Write-Output 'Downloading Microsoft Edge x64.'",
+                            "$DownloadUri = 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi'",
+                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
+                            "Get-Item -Path $DestinationFilePath"
+                        ],
+                        "runAsSystem": false,
+                        "runElevated": false
                     },
 
                     {
