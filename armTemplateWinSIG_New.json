@@ -68,8 +68,8 @@
                         "type": "PowerShell",
                         "name": "Create-BuildArtifacts",
                         "inline": [
-                            "@('KB2592687', 'KB3191566', 'Intl') | ForEach-Object {New-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\$_ -ItemType Directory -Force}",
-                            "@('FSLogix', 'VSCode', 'Edge', 'Office') | ForEach-Object {New-Item -Path C:\\BuildArtifacts\\Applications\\$_ -ItemType Directory -Force}"
+                            "@('KB2592687', 'KB3191566', 'Intl') | ForEach-Object {New-Item -Path (Join-Path -Path 'C:\\BuildArtifacts\\SecurityUpdates' -ChildPath $_) -ItemType Directory -Force}",
+                            "@('FSLogix', 'VSCode', 'Edge', 'Office') | ForEach-Object {New-Item -Path (Join-Path -Path 'C:\\BuildArtifacts\\Applications' -ChildPath $_) -ItemType Directory -Force}"
                         ],
                         "runAsSystem": false,
                         "runElevated": false
@@ -121,18 +121,18 @@
                         "type": "PowerShell",
                         "name": "Expand-KB3191566-WMF5.1",
                         "inline": [
-                            "Write-Output 'Expanding Win7AndW2K8R2-KB3191566-x64.zip.'",
                             "$ZipFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.zip'",
+                            "if (-not (Test-Path -Path $ZipFilePath)) {Write-Error \"The following file could not be found: $ZipFilePath.\"}",
                             "$DestinationFolderPath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566'",
+                            "if (-not (Test-Path -Path $DestinationFolderPath)) {New-Item -Path $DestinationFolderPath -ItemType Directory -Force}",
+                            "Write-Output \"Expanding $ZipFilePath to $DestinationFolderPath.\"",
                             "$ShellObject = New-Object -ComObject Shell.Application",
                             "$ZipFileContents = $ShellObject.NameSpace($ZipFilePath).Items()",
                             "$FolderObject = $ShellObject.NameSpace($DestinationFolderPath)",
                             "$FolderObject.CopyHere($ZipFileContents, 20)",
-                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu"
+                            "if (-not (Test-Path -Path 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu')) {Write-Error \"Failed to extract $ZipFilePath to $DestinationFolderPath.\"}"
                         ],
-                        "runAsSystem": false,
-                        "runElevated": false,
-                        "pause_before": "15s"
+                        "runElevated": false
                     },
 
                     {
@@ -141,11 +141,10 @@
                         "inline": [
                             "Write-Output 'Installing KB2592687: Update for Remote Desktop Protocol 8.0 for Windows 7 SP1.'",
                             "$MsuFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB2592687\\Windows6.1-KB2592687-x64.msu'",
-                            "Get-Item -Path $MsuFilePath",
+                            "if (-not (Test-Path -Path $MsuFilePath)) {Write-Error \"The following file could not be found: $MsuFilePath.\"}",
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList $MsuFilePath, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
                         "runElevated": true,
                         "valid_exit_codes": [0, 2359301, 2359302]
                     },
@@ -158,7 +157,6 @@
                             "New-Item -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Force",
                             "Set-ItemProperty -Path 'HKLM:SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services' -Name fServerEnableRDP8 -Type Dword -Value 1 -Force"
                         ],
-                        "runAsSystem": false,
                         "runElevated": true
                     },
                     
@@ -168,21 +166,18 @@
                         "inline": [
                             "Write-Output 'Installing KB3191566: Windows Management Framework 5.1 for Windows 7 SP1.'",
                             "$MsuFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu'",
-                            "Get-Item -Path $MsuFilePath",
+                            "if (-not (Test-Path -Path MsuFilePath)) {Write-Error \"The following file could not be found: $MsuFilePath.\"}",
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList $MsuFilePath, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
                         "runElevated": true,
-                        "valid_exit_codes": [0, 2359301, 2359302],
-                        "pause_before": "15s"
+                        "valid_exit_codes": [0, 2359301, 2359302]
                     },
 
                     {
                         "type": "PowerShell",
                         "name": "Enable-TLS1.2",
                         "scriptUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/Enable-TLS12.ps1",
-                        "runAsSystem": false,
                         "runElevated": true
                     },
 
@@ -197,13 +192,12 @@
                         "type": "PowerShell",
                         "name": "Download-VSCode",
                         "inline": [
-                            "Write-Output 'Downloading Visual Studio Code x64.'",
+                            "Write-Output 'Downloading Visual Studio Code.'",
                             "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
                             "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
-                            "Get-Item -Path $DestinationFilePath"
+                            "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error \"Failed to download Visual Studio Code from $DownloadUri to $DestinationFilePath.\"}"
                         ],
-                        "runAsSystem": false,
                         "runElevated": false
                     },
 
@@ -215,9 +209,8 @@
                             "$DownloadUri = 'https://aka.ms/fslogix/download'",
                             "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\FSLogixApps.zip'",
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
-                            "Get-Item -Path $DestinationFilePath"
+                            "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error \"Failed to download FSLogix Apps from $DownloadUri to $DestinationFilePath.\"}"
                         ],
-                        "runAsSystem": false,
                         "runElevated": false
                     },
 
@@ -225,13 +218,14 @@
                         "type": "PowerShell",
                         "name": "Expand-FSLogixApps",
                         "inline": [
-                            "Write-Output 'Expanding FSLogixApps.zip.'",
                             "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\FSLogixApps.zip'",
+                            "if (-not (Test-Path -Path $ZipFilePath)) {Write-Error \"The Zip file could not be found: $ZipFilePath.\"}",
                             "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications\\FSLogix'",
+                            "if (-not (Test-Path -Path $DestinationFolderPath)) {New-Item -Path $DestinationFolderPath -ItemType Directory -Force}",
+                            "Write-Output \"Expanding $ZipFilePath to $DestinationFolderPath.\"",
                             "Expand-Archive -Path $ZipFilePath -DestinationPath $DestinationFolderPath -Force",
-                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\FSLogix\\x64\\Release\\FSLogixAppsSetup.exe"
+                            "if (-not (Test-Path -Path (Join-Path -Path $DestinationFolderPath -ChildPath 'x64\\Release\\FSLogixAppsSetup.exe'))) {Write-Error \"Failed to expand $ZipFilePath to $DestinationFolderPath.\"}"
                         ],
-                        "runAsSystem": false,
                         "runElevated": false
                     },
 
@@ -241,16 +235,17 @@
                         "inline": [
                             "Write-Output 'Installing Microsoft 365 Apps for Enterprise.'",
                             "$OfficeDeploymentToolFilePath = 'C:\\BuildArtifacts\\Applications\\Office\\OfficeDeploymentTool.exe'",
+                            "if (-not (Test-Path -Path $OfficeDeploymentToolFilePath)) {Write-Error \"The following file could not be found: $OfficeDeploymentToolFilePath.\"}",
                             "$OfficeConfigurationFilePath = 'C:\\BuildArtifacts\\Applications\\Office\\OfficeConfiguration.xml'",
-                            "Get-Item -Path $OfficeDeploymentToolFilePath",
-                            "Get-Item -Path $OfficeConfigurationFilePath",
-                            "Start-Process -Wait -NoNewWindow -PassThru -FilePath $OfficeDeploymentToolFilePath -ArgumentList /extract:C:\\BuildArtifacts\\Applications\\Office, /quiet, /passive, /norestart",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\Office\\setup.exe -ArgumentList /configure, $OfficeConfigurationFilePath",
+                            "if (-not (Test-Path -Path $OfficeConfigurationFilePath)) {Write-Error \"The following file could not be found: $OfficeConfigurationFilePath.\"}",
+                            "$OfficeDestinationFolderPath = 'C:\\BuildArtifacts\\Applications\\Office'",
+                            "Start-Process -Wait -NoNewWindow -FilePath $OfficeDeploymentToolFilePath -ArgumentList /extract:$OfficeDestinationFolderPath, /quiet, /passive, /norestart",
+                            "$ExeFilePath = Join-Path -Path $OfficeDestinationFolderPath -ChildPath 'setup.exe'",
+                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error \"Failed to extract $OfficeDeploymentToolFilePath to $DestinationFolderPath.\"}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /configure, $OfficeConfigurationFilePath",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
-                        "runElevated": true,
-                        "valid_exit_codes": [0, 1707, 3010, 1641, 1618]
+                        "runElevated": true
                     },
 
                     {
@@ -259,11 +254,10 @@
                         "inline": [
                             "Write-Output 'Installing Microsoft Edge Enterprise x64.'",
                             "$MsiFilePath = 'C:\\BuildArtifacts\\Applications\\Edge\\MicrosoftEdgeEnterpriseX64.msi'",
-                            "Get-Item -Path $MsiFilePath",
+                            "if (-not (Test-Path -Path $MsiFilePath)) {Write-Error \"The following file could not be found: $MsiFilePath.\"}",
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList /i, $MsiFilePath, /quiet, /passive, /qn, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
                         "runElevated": true,
                         "valid_exit_codes": [0, 1707, 3010, 1641, 1618]
                     },
@@ -274,11 +268,10 @@
                         "inline": [
                             "Write-Output 'Installing Microsoft Visual Studio Code x64.'",
                             "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
-                            "Get-Item -Path $ExeFilePath",
+                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error \"The following file could not be found: $ExeFilePath.\"}",
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /verysilent, /norestart, /mergetasks=!runcode",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
                         "runElevated": true
                     },
 
@@ -287,33 +280,11 @@
                         "name": "Install-FSLogixApps",
                         "inline": [
                             "Write-Output 'Installing FSLogixApps.'",
-                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe -ArgumentList /install, /quiet, /norestart",
+                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\x64\\Release\\FSLogixAppsSetup.exe'",
+                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error \"The following file could not be found: $ExeFilePath.\"}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /install, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
-                        "runAsSystem": false,
-                        "runElevated": true
-                    },
-
-                    {
-                        "type": "WindowsUpdate",
-                        "name": "Install-FrenchLanguagePack",
-                        "searchCriteria": "AutoSelectOnWebSites=0 and IsInstalled=0",
-                        "filters": [
-                            "exclude:$false",
-                            "include:$_.Title -like 'French Language Pack*'"
-                        ],
-                        "updateLimit": 1
-                    },
-
-                    {
-                        "type": "PowerShell",
-                        "name": "Apply-InternationalSettings",
-                        "inline": [
-                            "Write-Output 'Applying International Settings.'",
-                            "control.exe intl.cpl,,/f:\"C:\\BuildArtifacts\\SecurityUpdates\\InternationalSettings.xml\""
-                        ],
-                        "runAsSystem": false,
                         "runElevated": true
                     },
 
@@ -323,15 +294,14 @@
                         "inline": [
                             "Write-Output 'Verifying Installed Components and Cleaning up Build Artifacts'",
                             "Get-Host",
-                            "Get-WmiObject -Class Win32_QuickFixEngineering -Filter \"(HotFixID = 'KB2592687') OR (HotfixID = 'KB3191566') OR (HotfixID = '2483139')\"",
+                            "Get-WmiObject -Class Win32_QuickFixEngineering -Filter \"(HotFixID = 'KB2592687') OR (HotfixID = 'KB3191566')\"",
                             "Get-WmiObject -Class Win32_Product -Filter \"Name like '%FSLogix%'\"",
                             "Get-WmiObject -Class Win32_Product -Filter \"Name like '%Edge%'\"",
                             "Get-WmiObject -Class Win32_Product -Filter \"Name like '%Office%'\"",
                             "Get-Item -Path 'C:\\Program Files\\Microsoft VS Code\\Code.exe'",
-                            "dism.exe /online /Get-Intl",
+                            "Get-ChildItem -Path C:\\BuildArtifacts -File -Recurse | ForEach-Object {Remove-Item -Path $_.FullName -Force}",
                             "Remove-Item -Path C:\\BuildArtifacts -Recurse -Force"
                         ],
-                        "runAsSystem": false,
                         "runElevated": true
                     }
 

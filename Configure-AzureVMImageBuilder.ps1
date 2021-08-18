@@ -26,10 +26,10 @@ $location="eastus"
 $runOutputName="aibCustomWindows7Image"
 
 # Image template name
-$imageTemplateName="aibCustomWindows7ImageTemplateVer14"
+$imageTemplateName="aibCustomWindows7ImageTemplateVer2"
 
 # The Image Template File Name
-$templateFilePath = "armTemplateWinSIG.json"
+$templateFilePath = "armTemplateWinSIG_New.json"
 
 # Image gallery name
 $sigGalleryName= "scrapaper_SharedImageGallery"
