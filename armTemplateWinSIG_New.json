@@ -86,7 +86,7 @@
                         "type": "File",
                         "name": "Download-KB3191566-WMF5.1",
                         "sourceUri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7AndW2K8R2-KB3191566-x64.zip",
-                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.zip"
+                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\KB3191566.zip"
                     },
 
                     {
@@ -121,7 +121,7 @@
                         "type": "PowerShell",
                         "name": "Expand-KB3191566-WMF5.1",
                         "inline": [
-                            "$ZipFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.zip'",
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566.zip'",
                             "if (-not (Test-Path -Path $ZipFilePath)) {Write-Error \"The following file could not be found: $ZipFilePath.\"}",
                             "$DestinationFolderPath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566'",
                             "if (-not (Test-Path -Path $DestinationFolderPath)) {New-Item -Path $DestinationFolderPath -ItemType Directory -Force}",
@@ -207,7 +207,7 @@
                         "inline": [
                             "Write-Output 'Downloading FSLogix Apps.'",
                             "$DownloadUri = 'https://aka.ms/fslogix/download'",
-                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\FSLogixApps.zip'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
                             "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error \"Failed to download FSLogix Apps from $DownloadUri to $DestinationFilePath.\"}"
                         ],
@@ -218,7 +218,7 @@
                         "type": "PowerShell",
                         "name": "Expand-FSLogixApps",
                         "inline": [
-                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\FSLogixApps.zip'",
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
                             "if (-not (Test-Path -Path $ZipFilePath)) {Write-Error \"The Zip file could not be found: $ZipFilePath.\"}",
                             "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications\\FSLogix'",
                             "if (-not (Test-Path -Path $DestinationFolderPath)) {New-Item -Path $DestinationFolderPath -ItemType Directory -Force}",

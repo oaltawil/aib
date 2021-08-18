@@ -26,7 +26,7 @@ $location="eastus"
 $runOutputName="aibCustomWindows7Image"
 
 # Image template name
-$imageTemplateName="aibCustomWindows7ImageTemplateVer2"
+$imageTemplateName="aibCustomWindows7ImageTemplateVer4"
 
 # The Image Template File Name
 $templateFilePath = "armTemplateWinSIG_New.json"
