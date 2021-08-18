@@ -68,8 +68,8 @@
                         "type": "PowerShell",
                         "name": "Create-BuildArtifacts",
                         "inline": [
-                            "New-Item -Path C:\\BuildArtifacts\\SecurityUpdates -ItemType Directory -Force",
-                            "New-Item -Path C:\\BuildArtifacts\\Applications -ItemType Directory -Force" 
+                            "@('KB2592687', 'KB3191566', 'Intl') | ForEach-Object {New-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\$_ -ItemType Directory -Force}",
+                            "@('FSLogix', 'VSCode', 'Edge', 'Office') | ForEach-Object {New-Item -Path C:\\BuildArtifacts\\Applications\\$_ -ItemType Directory -Force}"
                         ],
                         "runAsSystem": false,
                         "runElevated": false
@@ -79,42 +79,42 @@
                         "type": "File",
                         "name": "Download-KB2592687-RDP8.0",
                         "sourceUri": "https://download.microsoft.com/download/A/F/5/AF5C565C-9771-4BFB-973B-4094C1F58646/Windows6.1-KB2592687-x64.msu",
-                        "destination": "C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu"
+                        "destination": "C:\\BuildArtifacts\\SecurityUpdates\\KB2592687\\Windows6.1-KB2592687-x64.msu"
                     },
 
                     {
                         "type": "File",
                         "name": "Download-KB3191566-WMF5.1",
                         "sourceUri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7AndW2K8R2-KB3191566-x64.zip",
-                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.zip"
-                    },
-
-                    {
-                        "type": "File",
-                        "name": "Download-MicrosoftEdge",
-                        "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
-                        "destination":"C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi"
+                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.zip"
                     },
 
                     {
                         "type": "File",
                         "name": "Download-InternationalSettings",
                         "sourceUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/InternationalSettings.xml",
-                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\InternationalSettings.xml"
+                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Intl\\InternationalSettings.xml"
+                    },
+
+                    {
+                        "type": "File",
+                        "name": "Download-MicrosoftEdge",
+                        "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
+                        "destination":"C:\\BuildArtifacts\\Applications\\Edge\\MicrosoftEdgeEnterpriseX64.msi"
                     },
 
                     {
                         "type": "File",
                         "name": "Download-OfficeDeploymentTool",
                         "sourceUri": "https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_14131-20278.exe",
-                        "destination": "C:\\BuildArtifacts\\Applications\\OfficeDeploymentTool.exe"
+                        "destination": "C:\\BuildArtifacts\\Applications\\Office\\OfficeDeploymentTool.exe"
                     },
 
                     {
                         "type": "File",
                         "name": "Download-OfficeConfigurationFile",
                         "sourceUri": "https://deploymentconfigstorage.blob.core.windows.net/deploymentconfig/9a2866fd-a1ce-4f8f-afcc-2143e2bf92bf/575e62f4-fcdf-46f1-a06a-3a0f0b20ace1.xml?sv=2018-11-09&sr=b&sig=ToqsYnLAu0YwKkdM1bf6hmpXDCRCsTQxuHYUL2X%2FrOw%3D&st=2021-08-17T19%3A58%3A04Z&se=2023-08-17T20%3A03%3A04Z&sp=r",
-                        "destination": "C:\\BuildArtifacts\\Applications\\OfficeConfiguration.xml"
+                        "destination": "C:\\BuildArtifacts\\Applications\\Office\\OfficeConfiguration.xml"
                     },
 
                     {
@@ -122,13 +122,13 @@
                         "name": "Expand-KB3191566-WMF5.1",
                         "inline": [
                             "Write-Output 'Expanding Win7AndW2K8R2-KB3191566-x64.zip.'",
-                            "$ZipFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.zip'",
-                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\SecurityUpdates'",
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.zip'",
+                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566'",
                             "$ShellObject = New-Object -ComObject Shell.Application",
                             "$ZipFileContents = $ShellObject.NameSpace($ZipFilePath).Items()",
                             "$FolderObject = $ShellObject.NameSpace($DestinationFolderPath)",
                             "$FolderObject.CopyHere($ZipFileContents, 20)",
-                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu"
+                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu"
                         ],
                         "runAsSystem": false,
                         "runElevated": false,
@@ -140,8 +140,9 @@
                         "name": "Install-KB2592687-RDP8.0",
                         "inline": [
                             "Write-Output 'Installing KB2592687: Update for Remote Desktop Protocol 8.0 for Windows 7 SP1.'",
-                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Windows6.1-KB2592687-x64.msu, /quiet, /norestart",
+                            "$MsuFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB2592687\\Windows6.1-KB2592687-x64.msu'",
+                            "Get-Item -Path $MsuFilePath",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList $MsuFilePath, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
@@ -166,14 +167,15 @@
                         "name": "Install-KB3191566-WMF5.1",
                         "inline": [
                             "Write-Output 'Installing KB3191566: Windows Management Framework 5.1 for Windows 7 SP1.'",
-                            "Get-Item -Path C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList C:\\BuildArtifacts\\SecurityUpdates\\Win7AndW2K8R2-KB3191566-x64.msu, /quiet, /norestart",
+                            "$MsuFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu'",
+                            "Get-Item -Path $MsuFilePath",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList $MsuFilePath, /quiet, /norestart",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
                         "runElevated": true,
                         "valid_exit_codes": [0, 2359301, 2359302],
-                        "pause_before": "30s"
+                        "pause_before": "15s"
                     },
 
                     {
@@ -197,7 +199,7 @@
                         "inline": [
                             "Write-Output 'Downloading Visual Studio Code x64.'",
                             "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
-                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
                             "Get-Item -Path $DestinationFilePath"
                         ],
@@ -211,7 +213,7 @@
                         "inline": [
                             "Write-Output 'Downloading FSLogix Apps.'",
                             "$DownloadUri = 'https://aka.ms/fslogix/download'",
-                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\FSLogixApps.zip'",
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
                             "Get-Item -Path $DestinationFilePath"
                         ],
@@ -224,10 +226,10 @@
                         "name": "Expand-FSLogixApps",
                         "inline": [
                             "Write-Output 'Expanding FSLogixApps.zip.'",
-                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
-                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications'",
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\FSLogixApps.zip'",
+                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications\\FSLogix'",
                             "Expand-Archive -Path $ZipFilePath -DestinationPath $DestinationFolderPath -Force",
-                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\x64\\Release\\FSLogixAppsSetup.exe"
+                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\FSLogix\\x64\\Release\\FSLogixAppsSetup.exe"
                         ],
                         "runAsSystem": false,
                         "runElevated": false
@@ -238,12 +240,12 @@
                         "name": "Install-Office365",
                         "inline": [
                             "Write-Output 'Installing Microsoft 365 Apps for Enterprise.'",
-                            "$OfficeDeploymentToolFilePath = 'C:\\BuildArtifacts\\Applications\\OfficeDeploymentTool.exe'",
-                            "$OfficeConfigurationFilePath = 'C:\\BuildArtifacts\\Applications\\OfficeConfiguration.xml'",
+                            "$OfficeDeploymentToolFilePath = 'C:\\BuildArtifacts\\Applications\\Office\\OfficeDeploymentTool.exe'",
+                            "$OfficeConfigurationFilePath = 'C:\\BuildArtifacts\\Applications\\Office\\OfficeConfiguration.xml'",
                             "Get-Item -Path $OfficeDeploymentToolFilePath",
                             "Get-Item -Path $OfficeConfigurationFilePath",
-                            "Start-Process -Wait -NoNewWindow -PassThru -FilePath $OfficeDeploymentToolFilePath -ArgumentList /extract:C:\\BuildArtifacts\\Applications, /quiet, /passive, /norestart",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\setup.exe -ArgumentList /configure, $OfficeConfigurationFilePath",
+                            "Start-Process -Wait -NoNewWindow -PassThru -FilePath $OfficeDeploymentToolFilePath -ArgumentList /extract:C:\\BuildArtifacts\\Applications\\Office, /quiet, /passive, /norestart",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\Office\\setup.exe -ArgumentList /configure, $OfficeConfigurationFilePath",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
@@ -256,8 +258,9 @@
                         "name": "Install-MicrosoftEdge",
                         "inline": [
                             "Write-Output 'Installing Microsoft Edge Enterprise x64.'",
-                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList /i, C:\\BuildArtifacts\\Applications\\MicrosoftEdgeEnterpriseX64.msi, /quiet, /passive, /qn, /norestart",
+                            "$MsiFilePath = 'C:\\BuildArtifacts\\Applications\\Edge\\MicrosoftEdgeEnterpriseX64.msi'",
+                            "Get-Item -Path $MsiFilePath",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList /i, $MsiFilePath, /quiet, /passive, /qn, /norestart",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
@@ -270,8 +273,9 @@
                         "name": "Install-VSCode",
                         "inline": [
                             "Write-Output 'Installing Microsoft Visual Studio Code x64.'",
-                            "Get-Item -Path C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\BuildArtifacts\\Applications\\VSCodeSetup-x64.exe -ArgumentList /verysilent, /norestart, /mergetasks=!runcode",
+                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
+                            "Get-Item -Path $ExeFilePath",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /verysilent, /norestart, /mergetasks=!runcode",
                             "return $Process.ExitCode"
                         ],
                         "runAsSystem": false,
