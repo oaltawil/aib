@@ -71,7 +71,6 @@
                             "@('KB2592687', 'KB3191566', 'Intl') | ForEach-Object {New-Item -Path (Join-Path -Path 'C:\\BuildArtifacts\\SecurityUpdates' -ChildPath $_) -ItemType Directory -Force}",
                             "@('FSLogix', 'VSCode', 'Edge', 'Office') | ForEach-Object {New-Item -Path (Join-Path -Path 'C:\\BuildArtifacts\\Applications' -ChildPath $_) -ItemType Directory -Force}"
                         ],
-                        "runAsSystem": false,
                         "runElevated": false
                     },
 
@@ -133,8 +132,22 @@
                             "if (-not (Test-Path -Path 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu')) {Write-Error -Message \"Failed to extract $ZipFilePath to $DestinationFolderPath.\" -ErrorAction Stop}"
                         ],
                         "runElevated": true,
-                        "runAsSystem": false,
-                        "pause_before": "15s"
+                        "pause_before": "30s"
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Install-KB3191566-WMF5.1",
+                        "inline": [
+                            "Write-Output 'Installing KB3191566: Windows Management Framework 5.1 for Windows 7 SP1.'",
+                            "$MsuFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu'",
+                            "if (-not (Test-Path -Path MsuFilePath)) {Write-Error -Message \"The following file could not be found: $MsuFilePath.\" -ErrorAction Stop}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList $MsuFilePath, /quiet, /norestart",
+                            "return $Process.ExitCode"
+                        ],
+                        "runElevated": true,
+                        "valid_exit_codes": [0, 2359301, 2359302],
+                        "pause_before": "30s"
                     },
 
                     {
@@ -161,20 +174,6 @@
                         ],
                         "runElevated": true
                     },
-                    
-                    {
-                        "type": "PowerShell",
-                        "name": "Install-KB3191566-WMF5.1",
-                        "inline": [
-                            "Write-Output 'Installing KB3191566: Windows Management Framework 5.1 for Windows 7 SP1.'",
-                            "$MsuFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu'",
-                            "if (-not (Test-Path -Path MsuFilePath)) {Write-Error -Message \"The following file could not be found: $MsuFilePath.\" -ErrorAction Stop}",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList $MsuFilePath, /quiet, /norestart",
-                            "return $Process.ExitCode"
-                        ],
-                        "runElevated": true,
-                        "valid_exit_codes": [0, 2359301, 2359302]
-                    },
 
                     {
                         "type": "PowerShell",
@@ -200,7 +199,7 @@
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
                             "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error -Message \"Failed to download Visual Studio Code from $DownloadUri to $DestinationFilePath.\" -ErrorAction Stop}"
                         ],
-                        "runElevated": false
+                        "runElevated": true
                     },
 
                     {
@@ -213,7 +212,7 @@
                             "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
                             "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error -Message \"Failed to download FSLogix Apps from $DownloadUri to $DestinationFilePath.\" -ErrorAction Stop}"
                         ],
-                        "runElevated": false
+                        "runElevated": true
                     },
 
                     {
@@ -229,7 +228,7 @@
                             "Expand-Archive -Path $ZipFilePath -DestinationPath $DestinationFolderPath -Force",
                             "if (-not (Test-Path -Path (Join-Path -Path $DestinationFolderPath -ChildPath 'x64\\Release\\FSLogixAppsSetup.exe'))) {Write-Error -Message \"Failed to expand $ZipFilePath to $DestinationFolderPath.\" -ErrorAction Stop}"
                         ],
-                        "runElevated": false
+                        "runElevated": true
                     },
 
                     {
