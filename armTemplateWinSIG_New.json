@@ -90,13 +90,6 @@
 
                     {
                         "type": "File",
-                        "name": "Download-InternationalSettings",
-                        "sourceUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/InternationalSettings.xml",
-                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Intl\\InternationalSettings.xml"
-                    },
-
-                    {
-                        "type": "File",
                         "name": "Download-MicrosoftEdge",
                         "sourceUri": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/fbfdb4b9-1af5-4723-a7bc-4dac657f228c/MicrosoftEdgeEnterpriseX64.msi",
                         "destination":"C:\\BuildArtifacts\\Applications\\Edge\\MicrosoftEdgeEnterpriseX64.msi"
@@ -117,6 +110,20 @@
                     },
 
                     {
+                        "type": "File",
+                        "name": "Download-FrenchLanguagePack",
+                        "sourceUri": "https://stscrapapereu01.blob.core.windows.net/build/lp.cab?sp=r&st=2021-08-19T01:25:18Z&se=2023-08-17T09:25:18Z&spr=https&sv=2020-08-04&sr=b&sig=MEqSkRUwOXk4u3WTR5NuWIS8%2BF%2FlXfhLfPeiD1UxQgc%3D",
+                        "destination": "C:\\BuildArtifacts\\SecurityUpdates\\Intl\\lp.cab"
+                    },
+
+                    {
+                        "type": "File",
+                        "name": "Download-InternationalSettings",
+                        "sourceUri": "https://raw.githubusercontent.com/oaltawil/wvd7/main/InternationalSettings.xml",
+                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\Intl\\InternationalSettings.xml"
+                    },
+
+                    {
                         "type": "PowerShell",
                         "name": "Expand-KB3191566-WMF5.1",
                         "inline": [
@@ -131,8 +138,7 @@
                             "$FolderObject.CopyHere($ZipFileContents, 20)",
                             "if (-not (Test-Path -Path 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu')) {Write-Error -Message \"Failed to extract $ZipFilePath to $DestinationFolderPath.\" -ErrorAction Stop}"
                         ],
-                        "runElevated": true,
-                        "pause_before": "30s"
+                        "runElevated": true
                     },
 
                     {
@@ -191,19 +197,6 @@
 
                     {
                         "type": "PowerShell",
-                        "name": "Download-VSCode",
-                        "inline": [
-                            "Write-Output 'Downloading the latest version of Visual Studio Code.'",
-                            "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
-                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
-                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
-                            "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error -Message \"Failed to download Visual Studio Code from $DownloadUri to $DestinationFilePath.\" -ErrorAction Stop}"
-                        ],
-                        "runElevated": true
-                    },
-
-                    {
-                        "type": "PowerShell",
                         "name": "Download-FSLogixApps",
                         "inline": [
                             "Write-Output 'Downloading the latest version of FSLogix Apps.'",
@@ -228,7 +221,49 @@
                             "Expand-Archive -Path $ZipFilePath -DestinationPath $DestinationFolderPath -Force",
                             "if (-not (Test-Path -Path (Join-Path -Path $DestinationFolderPath -ChildPath 'x64\\Release\\FSLogixAppsSetup.exe'))) {Write-Error -Message \"Failed to expand $ZipFilePath to $DestinationFolderPath.\" -ErrorAction Stop}"
                         ],
+                        "runElevated": true,
+                        "pause_before": "30s"
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Install-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Installing the latest version of FSLogix Apps.'",
+                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\x64\\Release\\FSLogixAppsSetup.exe'",
+                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error -Message \"The following file could not be found: $ExeFilePath.\" -ErrorAction Stop}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /install, /quiet, /norestart",
+                            "return $Process.ExitCode"
+                        ],
+                        "runElevated": true,
+                        "pause_before": "30s"
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Download-VSCode",
+                        "inline": [
+                            "Write-Output 'Downloading the latest version of Visual Studio Code.'",
+                            "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
+                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
+                            "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error -Message \"Failed to download Visual Studio Code from $DownloadUri to $DestinationFilePath.\" -ErrorAction Stop}"
+                        ],
                         "runElevated": true
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Install-VSCode",
+                        "inline": [
+                            "Write-Output 'Installing the latest version of Microsoft Visual Studio Code.'",
+                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
+                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error -Message \"The following file could not be found: $ExeFilePath.\" -ErrorAction Stop}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /verysilent, /norestart, /mergetasks=!runcode",
+                            "return $Process.ExitCode"
+                        ],
+                        "runElevated": true,
+                        "pause_before": "15s"
                     },
 
                     {
@@ -256,7 +291,7 @@
                         "inline": [
                             "Write-Output 'Installing Microsoft Edge - Version 92.0.902.73 - Stable Channel.'",
                             "$MsiFilePath = 'C:\\BuildArtifacts\\Applications\\Edge\\MicrosoftEdgeEnterpriseX64.msi'",
-                            "if (-not (Test-Path -Path $MsiFilePath)) {Write-Error -Message \"The following file could not be found: $MsiFilePath.\"}",
+                            "if (-not (Test-Path -Path $MsiFilePath)) {Write-Error -Message \"The following file could not be found: $MsiFilePath.\" -ErrorAction Stop}",
                             "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList /i, $MsiFilePath, /quiet, /passive, /qn, /norestart",
                             "return $Process.ExitCode"
                         ],
@@ -266,12 +301,12 @@
 
                     {
                         "type": "PowerShell",
-                        "name": "Install-VSCode",
+                        "name": "Install-FrenchLanguagePack",
                         "inline": [
-                            "Write-Output 'Installing the latest version of Microsoft Visual Studio Code.'",
-                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
-                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error -Message \"The following file could not be found: $ExeFilePath.\"}",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /verysilent, /norestart, /mergetasks=!runcode",
+                            "Write-Output 'Installing the French Language Pack for Windows 7 SP1.'",
+                            "$LpFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\Intl\\lp.cab'",
+                            "if (-not (Test-Path -Path $LpFilePath)) {Write-Error -Message \"The following file could not be found: $LpFilePath.\" -ErrorAction Stop}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath dism.exe -ArgumentList /Online, /Add-Package, /PackagePath:$LpFilePath",
                             "return $Process.ExitCode"
                         ],
                         "runElevated": true
@@ -279,13 +314,12 @@
 
                     {
                         "type": "PowerShell",
-                        "name": "Install-FSLogixApps",
+                        "name": "Configure-InternationalSettings",
                         "inline": [
-                            "Write-Output 'Installing the latest version of FSLogix Apps.'",
-                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\x64\\Release\\FSLogixAppsSetup.exe'",
-                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error -Message \"The following file could not be found: $ExeFilePath.\"}",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /install, /quiet, /norestart",
-                            "return $Process.ExitCode"
+                            "Write-Output 'Configuring French as the Primary Languague.'",
+                            "$XmlFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\Intl\\InternationalSettings.xml'",
+                            "if (-not (Test-Path -Path $XmlFilePath)) {Write-Error -Message \"The following file could not be found: $XmlFilePath.\" -ErrorAction Stop}",
+                            "control.exe intl.cpl,,/f:\"$XmlFilePath\""
                         ],
                         "runElevated": true
                     },
