@@ -161,7 +161,7 @@
                             "$MsiFilePath = 'C:\\BuildArtifacts\\Applications\\PowerShell\\PowerShell-7.1.4-win-x64.msi'",
                             "if (-not (Test-Path -Path $MsiFilePath)) {Write-Error -Message \"The PowerShell 7 Setup file could not be found: $MsiFilePath.\"}",
                             "$MsiExecArguments = @(\"/i $MsiFilePath\", \"/quiet\", \"/passive\", \"/qn\", \"/norestart\")",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\Windows\\SysNative\\msiexec.exe -ArgumentList $MsiExecArguments",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList $MsiExecArguments",
                             "return $Process.ExitCode"
                         ],
                         "runElevated": true,
@@ -176,7 +176,7 @@
                             "$MsiFilePath = 'C:\\BuildArtifacts\\Applications\\Edge\\MicrosoftEdgeEnterpriseX64.msi'",
                             "if (-not (Test-Path -Path $MsiFilePath)) {Write-Error -Message \"The Microsoft Edge Setup file could not be found: $MsiFilePath.\"}",
                             "$MsiExecArguments = @(\"/i $MsiFilePath\", \"/quiet\", \"/passive\", \"/qn\", \"/norestart\")",
-                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath C:\\Windows\\SysNative\\msiexec.exe -ArgumentList $MsiExecArguments",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath msiexec.exe -ArgumentList $MsiExecArguments",
                             "return $Process.ExitCode"
                         ],
                         "runElevated": true,
