@@ -1,0 +1,104 @@
+                    {
+                        "type": "File",
+                        "name": "Download-KB3191566-WMF5.1",
+                        "sourceUri": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7AndW2K8R2-KB3191566-x64.zip",
+                        "destination":"C:\\BuildArtifacts\\SecurityUpdates\\KB3191566.zip"
+                    },
+
+
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Expand-and-Install-KB3191566-WMF5.1",
+                        "inline": [
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566.zip'",
+                            "if (-not (Test-Path -Path $ZipFilePath)) {Write-Error -Message \"The  Windows Management Framework 5.1 (KB3191566) Zip file could not be found: $ZipFilePath.\"}",
+                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566'",
+                            "if (-not (Test-Path -Path $DestinationFolderPath)) {New-Item -Path $DestinationFolderPath -ItemType Directory -Force}",
+                            "Write-Output \"Expanding $ZipFilePath to $DestinationFolderPath.\"",
+                            "$ShellObject = New-Object -ComObject Shell.Application",
+                            "$ZipFileContents = $ShellObject.NameSpace($ZipFilePath).Items()",
+                            "$FolderObject = $ShellObject.NameSpace($DestinationFolderPath)",
+                            "$FolderObject.CopyHere($ZipFileContents, 20)",
+                            "Start-Sleep -Seconds 30",
+                            "$MsuFilePath = 'C:\\BuildArtifacts\\SecurityUpdates\\KB3191566\\Win7AndW2K8R2-KB3191566-x64.msu'",
+                            "if (-not (Test-Path -Path $MsuFilePath)) {Write-Error -Message \"Failed to extract $ZipFilePath to $DestinationFolderPath.\"}",
+                            "Write-Output 'Installing KB3191566: Windows Management Framework 5.1 for Windows 7 SP1.'",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath wusa.exe -ArgumentList $MsuFilePath, /quiet, /norestart",
+                            "return $Process.ExitCode"
+                        ],
+                        "runElevated": true,
+                        "valid_exit_codes": [0, 2359301, 2359302]
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Download-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Downloading the latest version of FSLogix Apps.'",
+                            "$DownloadUri = 'https://aka.ms/fslogix/download'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
+                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
+                            "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error -Message \"Failed to download FSLogix Apps from $DownloadUri to $DestinationFilePath.\"}"
+                        ],
+                        "runElevated": true
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Expand-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Expanding FSLogix Apps.'",
+                            "$ZipFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogixApps.zip'",
+                            "if (-not (Test-Path -Path $ZipFilePath)) {Write-Error -Message \"The FSLogix Apps Zip file could not be found: $ZipFilePath.\"}",
+                            "$DestinationFolderPath = 'C:\\BuildArtifacts\\Applications\\FSLogix'",
+                            "if (-not (Test-Path -Path $DestinationFolderPath)) {New-Item -Path $DestinationFolderPath -ItemType Directory -Force}",
+                            "Write-Output \"Expanding $ZipFilePath to $DestinationFolderPath.\"",
+                            "Expand-Archive -Path $ZipFilePath -DestinationPath $DestinationFolderPath -Force",
+                            "if (-not (Test-Path -Path (Join-Path -Path $DestinationFolderPath -ChildPath 'x64\\Release\\FSLogixAppsSetup.exe'))) {Write-Error -Message \"Failed to expand $ZipFilePath to $DestinationFolderPath.\"}"
+                        ],
+                        "runElevated": true,
+                        "pause_before": "30s"
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Install-FSLogixApps",
+                        "inline": [
+                            "Write-Output 'Installing the latest version of FSLogix Apps.'",
+                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\FSLogix\\x64\\Release\\FSLogixAppsSetup.exe'",
+                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error -Message \"The FSLogix Apps Installer could not be found: $ExeFilePath.\"}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /install, /quiet, /norestart",
+                            "return $Process.ExitCode"
+                        ],
+                        "runElevated": true,
+                        "pause_before": "30s"
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Download-VSCode",
+                        "inline": [
+                            "Write-Output 'Downloading the latest version of Visual Studio Code.'",
+                            "$DownloadUri = 'https://update.code.visualstudio.com/latest/win32-x64/stable'",
+                            "$DestinationFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
+                            "Invoke-WebRequest -UseBasicParsing -Uri $DownloadUri -OutFile $DestinationFilePath",
+                            "if (-not (Test-Path -Path $DestinationFilePath)) {Write-Error -Message \"Failed to download Visual Studio Code from $DownloadUri to $DestinationFilePath.\"}"
+                        ],
+                        "runElevated": true
+                    },
+
+                    {
+                        "type": "PowerShell",
+                        "name": "Install-VSCode",
+                        "inline": [
+                            "Write-Output 'Installing the latest version of Microsoft Visual Studio Code.'",
+                            "$ExeFilePath = 'C:\\BuildArtifacts\\Applications\\VSCode\\VSCodeSetup-x64.exe'",
+                            "if (-not (Test-Path -Path $ExeFilePath)) {Write-Error -Message \"The Visual Studio Code Installer could not be found: $ExeFilePath.\"}",
+                            "$Process = Start-Process -Wait -NoNewWindow -PassThru -FilePath $ExeFilePath -ArgumentList /verysilent, /norestart, /mergetasks=!runcode",
+                            "return $Process.ExitCode"
+                        ],
+                        "runElevated": true,
+                        "pause_before": "30"
+                    },
+
